@@ -29,6 +29,7 @@ private extension TypeContentsOrderRule {
             "viewWillDisappear",
             "viewDidDisappear",
             "willMove",
+            "didMove",
         ]
 
         override func visitPost(_ node: ActorDeclSyntax) {
