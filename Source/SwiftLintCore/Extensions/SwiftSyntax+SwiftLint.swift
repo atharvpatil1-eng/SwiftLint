@@ -4,11 +4,7 @@ import SwiftSyntax
 
 // swiftlint:disable file_length
 
-// workaround for https://bugs.swift.org/browse/SR-10121 so we can use `Self` in a closure
-public protocol SwiftLintSyntaxVisitor: SyntaxVisitor {}
-extension SyntaxVisitor: SwiftLintSyntaxVisitor {}
-
-public extension SwiftLintSyntaxVisitor {
+public extension SyntaxVisitor {
     func walk<T>(tree: some SyntaxProtocol, handler: (Self) -> T) -> T {
         walk(tree)
         return handler(self)
