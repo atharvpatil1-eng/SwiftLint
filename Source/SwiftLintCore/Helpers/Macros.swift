@@ -9,17 +9,6 @@ public macro AutoConfigParser() = #externalMacro(
     type: "AutoConfigParser"
 )
 
-/// Deprecated. Use `AutoConfigParser` instead.
-@available(*, deprecated, renamed: "AutoConfigParser")
-@attached(
-    member,
-    names: named(apply), named(Parent)
-)
-public macro AutoApply() = #externalMacro(
-    module: "SwiftLintCoreMacros",
-    type: "AutoConfigParser"
-)
-
 /// Macro that lets an enum with a ``String`` raw type automatically conform to ``AcceptableByConfigurationElement``.
 @attached(
     extension,
@@ -38,18 +27,6 @@ public macro AcceptableByConfigurationElement() = #externalMacro(
 public macro DisabledWithoutSourceKit() = #externalMacro(
     module: "SwiftLintCoreMacros",
     type: "DisabledWithoutSourceKit"
-)
-
-/// Deprecated. Use `AcceptableByConfigurationElement` instead.
-@available(*, deprecated, renamed: "AcceptableByConfigurationElement")
-@attached(
-    extension,
-    conformances: AcceptableByConfigurationElement,
-    names: named(init(fromAny:context:)), named(asOption)
-)
-public macro MakeAcceptableByConfigurationElement() = #externalMacro(
-    module: "SwiftLintCoreMacros",
-    type: "AcceptableByConfigurationElement"
 )
 
 /// Macro that adds a conformance to the ``SwiftSyntaxRule`` protocol and a default `makeVisitor(file:)` implementation
