@@ -135,6 +135,12 @@ internal struct TypeContentsOrderRuleExamples {
             var body: some View { EmptyView() }
         }
         """),
+        Example("""
+        class ViewController: UIViewController {
+            override func didMove(toParent parent: UIViewController?) {}
+            override func viewDidLoad() {}
+        }
+        """),
     ]
 
     static let triggeringExamples = [
@@ -305,6 +311,12 @@ internal struct TypeContentsOrderRuleExamples {
             #else
                 static var i = 3
             #endif
+        }
+        """),
+        Example("""
+        class ViewController: UIViewController {
+            func foo() {}
+            override ↓func didMove(toParent parent: UIViewController?) {}
         }
         """),
     ]
