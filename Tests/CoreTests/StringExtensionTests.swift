@@ -46,4 +46,32 @@ final class StringExtensionTests: SwiftLintTestCase {
         XCTAssertEqual("s🤵🏼‍♀️s".characterPosition(of: 18), 2)
         XCTAssertNil("s🤵🏼‍♀️s".characterPosition(of: 19))
     }
+
+    func testHasTrailingWhitespace() {
+        // Case: Empty string
+        XCTAssertFalse("".hasTrailingWhitespace())
+
+        // Case: No trailing whitespace
+        XCTAssertFalse("string".hasTrailingWhitespace())
+
+        // Case: Trailing space
+        XCTAssertTrue("string ".hasTrailingWhitespace())
+
+        // Case: Trailing tab
+        XCTAssertTrue("string\t".hasTrailingWhitespace())
+
+        // Case: Trailing newline (not considered whitespace in CharacterSet.whitespaces)
+        XCTAssertFalse("string\n".hasTrailingWhitespace())
+        XCTAssertFalse("string\r\n".hasTrailingWhitespace())
+
+        // Case: Trailing whitespace followed by newline
+        XCTAssertFalse("string \n".hasTrailingWhitespace())
+
+        // Case: Whitespace only
+        XCTAssertTrue(" ".hasTrailingWhitespace())
+
+        // Case: Non-breaking space
+        // U+00A0 IS in CharacterSet.whitespaces
+        XCTAssertTrue("string\u{00A0}".hasTrailingWhitespace())
+    }
 }
