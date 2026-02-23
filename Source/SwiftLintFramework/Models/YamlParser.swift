@@ -47,12 +47,25 @@ private extension Constructor {
 
 private extension String {
     func expandingEnvVars(env: [String: String]) -> String {
-        guard contains("${") else {
-            // No environment variables used.
+        guard contains("${"),
+              let regex = try? NSRegularExpression(pattern: "\\$\\{([a-zA-Z0-9_]+)\\}") else {
             return self
         }
-        return env.reduce(into: self) { result, envVar in
-            result = result.replacingOccurrences(of: "${\(envVar.key)}", with: envVar.value)
+
+        let safeVariables: Set = [
+            "PWD", "HOME", "USER", "PROJECT_NAME", "SRCROOT", "WORKSPACE_PATH",
+            "CONFIGURATION", "PLATFORM_NAME", "SDKROOT", "TEMP_DIR", "DERIVED_DATA_DIR",
+        ]
+
+        var result = self
+        let matches = regex.matches(in: self, range: NSRange(location: 0, length: utf16.count))
+        for match in matches.reversed() {
+            let key = (self as NSString).substring(with: match.range(at: 1))
+            if key.hasPrefix("SWIFTLINT_") || key.hasPrefix("CI_") || safeVariables.contains(key),
+               let value = env[key] {
+                result = (result as NSString).replacingCharacters(in: match.range, with: value)
+            }
         }
+        return result
     }
 }

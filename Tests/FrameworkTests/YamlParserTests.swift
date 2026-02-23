@@ -57,16 +57,16 @@ final class YamlParserTests: SwiftLintTestCase {
 
     func testTreatAllEnvVarsAsStringsWithoutCasting() throws {
         let env = [
-            "INT": "1",
-            "FLOAT": "1.0",
-            "BOOL": "true",
-            "STRING": "string",
+            "SWIFTLINT_INT": "1",
+            "SWIFTLINT_FLOAT": "1.0",
+            "SWIFTLINT_BOOL": "true",
+            "SWIFTLINT_STRING": "string",
         ]
         let string = """
-            int: ${INT}
-            float: ${FLOAT}
-            bool: ${BOOL}
-            string: ${STRING}
+            int: ${SWIFTLINT_INT}
+            float: ${SWIFTLINT_FLOAT}
+            bool: ${SWIFTLINT_BOOL}
+            string: ${SWIFTLINT_STRING}
             """
 
         let result = try YamlParser.parse(string, env: env)
@@ -79,16 +79,16 @@ final class YamlParserTests: SwiftLintTestCase {
 
     func testRespectCastsOnEnvVars() throws {
         let env = [
-            "INT": "1",
-            "FLOAT": "1.0",
-            "BOOL": "true",
-            "STRING": "string",
+            "SWIFTLINT_INT": "1",
+            "SWIFTLINT_FLOAT": "1.0",
+            "SWIFTLINT_BOOL": "true",
+            "SWIFTLINT_STRING": "string",
         ]
         let string = """
-            int: !!int ${INT}
-            float: !!float ${FLOAT}
-            bool: !!bool ${BOOL}
-            string: !!str ${STRING}
+            int: !!int ${SWIFTLINT_INT}
+            float: !!float ${SWIFTLINT_FLOAT}
+            bool: !!bool ${SWIFTLINT_BOOL}
+            string: !!str ${SWIFTLINT_STRING}
             """
 
         let result = try YamlParser.parse(string, env: env)
@@ -97,5 +97,41 @@ final class YamlParserTests: SwiftLintTestCase {
         XCTAssertEqual(result["float"] as? Double, 1.0)
         XCTAssertEqual(result["bool"] as? Bool, true)
         XCTAssertEqual(result["string"] as? String, "string")
+    }
+
+    func testDoesNotExpandUnsafeEnvVars() throws {
+        let env = [
+            "GITHUB_TOKEN": "secret_token",
+            "AWS_SECRET_KEY": "secret_key",
+            "SWIFTLINT_SAFE_VAR": "safe_value",
+            "CI_VAR": "ci_value",
+            "PROJECT_NAME": "SwiftLint",
+        ]
+        let string = """
+            token: ${GITHUB_TOKEN}
+            key: ${AWS_SECRET_KEY}
+            safe: ${SWIFTLINT_SAFE_VAR}
+            ci: ${CI_VAR}
+            project: ${PROJECT_NAME}
+            """
+
+        let result = try YamlParser.parse(string, env: env)
+
+        XCTAssertEqual(result["token"] as? String, "${GITHUB_TOKEN}")
+        XCTAssertEqual(result["key"] as? String, "${AWS_SECRET_KEY}")
+        XCTAssertEqual(result["safe"] as? String, "safe_value")
+        XCTAssertEqual(result["ci"] as? String, "ci_value")
+        XCTAssertEqual(result["project"] as? String, "SwiftLint")
+    }
+
+    func testPrefixMatchBugFix() throws {
+        let env = [
+            "SWIFTLINT_A": "1",
+            "SWIFTLINT_AB": "2",
+        ]
+        let string = "key: ${SWIFTLINT_AB}"
+        let result = try YamlParser.parse(string, env: env)
+
+        XCTAssertEqual(result["key"] as? String, "2")
     }
 }
