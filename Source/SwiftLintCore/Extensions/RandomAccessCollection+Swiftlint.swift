@@ -31,26 +31,23 @@ public extension RandomAccessCollection where Index == Int {
         //                               ^
         // The idea is to get _first_ index which for which the predicate returns `true`
 
-        let lastIndex = count
-
         // The index that represents where bad values start
-        var badIndex = -1
+        var badIndex = startIndex - 1
 
         // The index that represents where good values start
-        var goodIndex = lastIndex
-        var midIndex = (badIndex + goodIndex) / 2
+        var goodIndex = endIndex
 
         while badIndex + 1 < goodIndex {
+            let midIndex = badIndex + (goodIndex - badIndex) / 2
             if try predicate(self[midIndex]) {
                 goodIndex = midIndex
             } else {
                 badIndex = midIndex
             }
-            midIndex = (badIndex + goodIndex) / 2
         }
 
         // We're out of bounds, no good items in array
-        if midIndex == lastIndex {
+        if goodIndex == endIndex {
             return nil
         }
         return goodIndex
