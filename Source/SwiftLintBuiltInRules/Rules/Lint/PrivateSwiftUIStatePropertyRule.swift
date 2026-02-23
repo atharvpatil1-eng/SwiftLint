@@ -143,17 +143,11 @@ private extension PrivateSwiftUIStatePropertyRule {
             let existingAccessLevelModifiers = node.modifiers.filter { $0.asAccessLevelModifier != nil }
             // Remove any existing access control modifiers, but preserve any of their leading and trailing trivia
             // Existing trivia will be appended to the rewritten access modifier
-            let previousAccessModifierLeadingTrivia = existingAccessLevelModifiers
-                .map(\.leadingTrivia)
-                .reduce(Trivia(pieces: [])) { partialResult, trivia in
-                    partialResult.merging(trivia)
-                }
+            let previousAccessModifierLeadingTrivia = Trivia(pieces: existingAccessLevelModifiers
+                .flatMap(\.leadingTrivia.pieces))
 
-            let previousAccessModifierTrailingTrivia = existingAccessLevelModifiers
-                .map(\.trailingTrivia)
-                .reduce(Trivia(pieces: [])) { partialResult, trivia in
-                    partialResult.merging(trivia)
-                }
+            let previousAccessModifierTrailingTrivia = Trivia(pieces: existingAccessLevelModifiers
+                .flatMap(\.trailingTrivia.pieces))
 
             let filteredModifiers = node.modifiers.filter { $0.asAccessLevelModifier == nil }
             // Extract the leading trivia from the binding specifier and apply it to the private modifier
