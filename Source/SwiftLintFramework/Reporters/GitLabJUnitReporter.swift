@@ -8,7 +8,7 @@ struct GitLabJUnitReporter: Reporter {
 
     static func generateReport(_ violations: [StyleViolation]) -> String {
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<testsuites><testsuite>" +
-            violations.map({ violation -> String in
+            String(violations.lazy.map { violation -> String in
                 let fileName = (violation.location.relativeFile ?? "<nopath>").escapedForXML()
                 let line = violation.location.line.map(String.init)
                 let column = violation.location.character.map(String.init)
@@ -28,11 +28,9 @@ struct GitLabJUnitReporter: Reporter {
                 Line: \(line ?? "nil")
                 Column: \(column ?? "nil")
                 """
-                return [
-                    "\n\t<testcase name='\(message)\'>\n",
-                    "\t\t<failure>\(body)\n\t\t</failure>\n",
-                    "\t</testcase>",
-                ].joined()
-            }).joined() + "\n</testsuite></testsuites>\n"
+                return "\n\t<testcase name='\(message)\'>\n" +
+                    "\t\t<failure>\(body)\n\t\t</failure>\n" +
+                    "\t</testcase>"
+            }.joined()) + "\n</testsuite></testsuites>\n"
     }
 }
