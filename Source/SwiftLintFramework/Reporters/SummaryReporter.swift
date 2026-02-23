@@ -59,8 +59,16 @@ private extension TextTable {
 
             let rule = RuleRegistry.shared.rule(forID: ruleIdentifier)
             let violations = ruleIdentifiersToViolationsMap[ruleIdentifier]
-            let numberOfWarnings = violations?.filter { $0.severity == .warning }.count ?? 0
-            let numberOfErrors = violations?.filter { $0.severity == .error }.count ?? 0
+            var numberOfWarnings = 0
+            var numberOfErrors = 0
+            for violation in violations ?? [] {
+                switch violation.severity {
+                case .warning:
+                    numberOfWarnings += 1
+                case .error:
+                    numberOfErrors += 1
+                }
+            }
             let numberOfViolations = numberOfWarnings + numberOfErrors
             totalNumberOfWarnings += numberOfWarnings
             totalNumberOfErrors += numberOfErrors
