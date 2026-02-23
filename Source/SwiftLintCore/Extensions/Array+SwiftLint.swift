@@ -171,7 +171,7 @@ public extension Array {
 
         subscript(index: Int) -> T {
             get {
-                queuedFatalError("Do not call this getter.")
+                buffer[index]!
             }
             set(newValue) {
                 buffer[index] = newValue
